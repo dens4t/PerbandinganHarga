@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script>
+    var tableindomaret = null;
+    var tablealfamart = null;
+    function cari(){
+      const keyword = document.querySelector('#cari').value;
+      if (keyword.trim().length == 0) return;
+      document.querySelector('#tombolcari').value = 'Proses...';
+      document.querySelector('#tombolcari').disabled = true;
+      tableindomaret.clear().draw();
+      tablealfamart.clear().draw();
+      google.script.run.withSuccessHandler((e)=>{
+        
+        e.indomaret.forEach((data)=>{
+          tableindomaret.row.add([`<img width='200' height='200' src="${data.img}"/>`,data.title, data.lagidiskon ? data.diskon : '', data.lagidiskon ? data.harga : '',data.lagidiskon ? data.sebelumdiskon : data.harga]).draw(false);
+        });
+        e.alfamart.forEach((data)=>{
+          tablealfamart.row.add([`<img width='200' height='200' src="${data.img}"/>`,data.title, data.lagidiskon ? data.diskon : '', data.lagidiskon ? data.harga : '',data.lagidiskon ? data.sebelumdiskon : data.harga]).draw(false);
+        });
+        
+      document.querySelector('#tombolcari').value = 'Cari';
+      document.querySelector('#tombolcari').disabled = false;
+        
+      }).olah(keyword);
+    }
+
+    function inisialisasi(){
+      $(document).ready( function () {
+          tableindomaret = $('#indomaret').DataTable();
+          tablealfamart = $('#alfamart').DataTable();
+      } );
+    }
+    window.onload = function() {
+      inisialisasi();
+      $('#informasi').modal('show'); 
+    };
+  </script>
+  </head>
+
+  
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+          <input type='text' class='form-control' id='cari' name='cari' value='' placeholder="coca cola"/>
+          <input type='button' class="btn btn-primary mb-1" id='tombolcari' onclick="cari()"  value='Cari'/>
+      </div>
+      <div class="row">
+        <div class="col">
+          <table id="indomaret" class="table table-primary datatable">
+            <thead>
+                <tr>
+                    <th valign='middle'><span class="badge bg-primary">Indomaret</span></th>
+                    <th valign='middle'>Judul</th>
+                    <th valign='middle'>Diskon</th>
+                    <th valign='middle'>Harga Diskon</th>
+                    <th valign='middle'>Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="col">
+          <table id="alfamart" class="table table-danger datatable">
+            <thead>
+                <tr>
+                    <th valign='middle'><span class="badge bg-danger">Alfamart</span></th>
+                    <th valign='middle'>Judul</th>
+                    <th valign='middle'>Diskon</th>
+                    <th valign='middle'>Harga Diskon</th>
+                    <th valign='middle'>Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+  <!-- Modal -->
+<div class="modal fade" id="informasi" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Info</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Tools ini berguna untuk mencari barang dan dapat melihat perbedaan harga barang diantara Indomaret dan Alfamart.<br/><br/>
+        Kamu dapat mensortir diskon terbesar berdasarkan pencarian terkait.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+  </body>
+</html>
